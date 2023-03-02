@@ -2,7 +2,7 @@ class CalcController {
 
     constructor() {
 
-        this.operation = [];
+        this._operation = [];
         this._locale = "pt-BR";
         this._displayCalcEl = document.querySelector("#display");
         this._dateEl = document.querySelector("#data");
@@ -31,13 +31,25 @@ class CalcController {
         });
 
     }
+    // Apaga TODOS os dados da tela
     clearAll() {
-
+        this._operation = [];
     }
+    // Apaga ultima entrada
     clearEntry() {
-
+        this._operation.pop();
     }
+    // Adiciona nova entrada
+    addOperation(value) {
+        this._operation.push(value);
 
+        console.log(this._operation);
+    }
+    // Mensagem de erro
+    setError() {
+        this.displayCalc = "Error";
+    }
+    // executa os botões
     execBtn(value) {
 
         switch (value) {
@@ -65,15 +77,37 @@ class CalcController {
             case 'soma':
 
                 break;
+            case 'igual':
+
+                break;
+                
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                this.addOperation(parseInt(value));
+                break;
+
+            default:
+                this.setError();
+                break;
         }
     }
 
+    //Função que escuta os eventos do Mouse
     initButtonsEvent() {
         let buttons = document.querySelectorAll("#buttons > g, #parts > g");
 
         buttons.forEach((btn, index) => {
             this.addEventListenerAll(btn, "click drag", e => {
                 let textBtn = btn.className.baseVal.replace("btn-", "");
+                this.execBtn(textBtn);
             });
 
             this.addEventListenerAll(btn, "mouseover mouseup mousedown", e => {
