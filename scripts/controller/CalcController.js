@@ -39,11 +39,81 @@ class CalcController {
     clearEntry() {
         this._operation.pop();
     }
+    //Pega a ultima Operação
+    getLastOperation() {
+
+        return this._operation[this._operation.length - 1];
+
+    }
+
+    setLastOperation(value){
+
+        this._operation[this._operation.length - 1] = value;
+    }
+
+    isOperator(value) {
+
+        return (['+', '-', '*', '%', '/'].indexOf(value) > -1);
+        /*
+        IndexOf(value) => retorna a posição do 'value' na array, se não encontrar retorna -1.
+        Tem a mesma funcionalidade do codigo abaixo:
+        if (['+', '-', '*', '%', '/'].indexOf(value) > -1) {
+            return true;
+        } else {
+            return false;
+        }
+        
+        */
+
+    }
+
+    pushOperation(value){
+
+        this._operation.push(value);
+        if (this._operation.length > 3){
+
+            let last = this._operation.pop;
+            console.log(this._operation,' - ', last);
+
+        } 
+
+    }
     // Adiciona nova entrada
     addOperation(value) {
-        this._operation.push(value);
 
-        console.log(this._operation);
+        if (isNaN(this.getLastOperation())) { //Verifica se não é um numero True not a Number, False is a number
+
+            if (this.isOperator(value)) {
+                //Trocar o operador
+                this.setLastOperation(value);
+
+            } else if(isNaN(value)) {
+                //Outras coisas
+                
+                console.log('Console ELSE IF ', value);
+
+            }else {
+
+                this.pushOperation(value);
+
+            }
+
+        } else { //Quando é um numero o ultimo item do array
+            if (this.isOperator(value)){
+
+                this.pushOperation(value);
+
+            } else {
+
+                let newValue = this.getLastOperation().toString() + value.toString();
+                this.setLastOperation(parseInt(newValue));
+
+            }
+
+            
+        }
+
+
     }
     // Mensagem de erro
     setError() {
@@ -60,27 +130,26 @@ class CalcController {
                 this.clearEntry();
                 break;
             case 'soma':
-
+                this.addOperation('+');
                 break;
             case 'subtracao':
-
+                this.addOperation('-');
                 break;
             case 'divisao':
-
+                this.addOperation('/');
                 break;
             case 'multiplicacao':
-
+                this.addOperation('*');
                 break;
             case 'porcento':
-
-                break;
-            case 'soma':
-
+                this.addOperation('%');
                 break;
             case 'igual':
 
                 break;
-                
+            case 'ponto':
+                this.addOperation('.');
+                break;
             case '0':
             case '1':
             case '2':
