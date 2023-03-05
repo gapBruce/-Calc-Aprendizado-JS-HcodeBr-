@@ -12,6 +12,27 @@ class CalcController {
         this._currentDate;
         this.initialize();
         this.initButtonsEvent();
+        this.initKeyboard();
+    }
+    copyToClipboard(){
+        let input = document.createElement('input');
+
+        input.value = this.displayCalc;
+
+        document.body.appendChild(input);
+
+        input.select();
+
+        document.execCommand("Copy");
+        
+        input.remove();
+    }
+    pasteToClipboard(){
+        document.addEventListener("paste", e=>{
+            let text = e.clipboardData.getData('Text');
+
+            this.displayCalc = parseFloat(text);
+        });
     }
     // Roda automaticamente ao iniciar o site
     initialize() {
@@ -24,6 +45,52 @@ class CalcController {
         }, 1000);
 
         this.setLastNumberToDisplay();
+        this.pasteToClipboard();
+    }
+
+    initKeyboard() {
+
+        document.addEventListener('keyup', e => {
+            console.log(e.key);
+
+            switch (e.key) {
+                case 'Escape':
+                    this.clearAll();
+                    break;
+                case 'Backspace':
+                    this.clearEntry();
+                    break;
+                case '+':
+                case '-':
+                case '*':
+                case '/':
+                case '%':
+                    this.addOperation(e.key);
+                    break;
+                case 'Enter':
+                case '=':
+                    this.calc();
+                    break;
+                case 'ponto':
+                case ',':
+                    this.addDot();
+                    break;
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    this.addOperation(parseInt(e.key));
+                    break;
+                case 'c':
+                    if (e.ctrlKey) this.copyToClipboard();
+            }
+        });
     }
 
     //Eventos dos Butoes /não é padrão
@@ -100,8 +167,8 @@ class CalcController {
         //true is default, get the last operator
         this._lastOperator = this.getLastItem();
 
-        if(this._operation.length < 3){
-            
+        if (this._operation.length < 3) {
+
             let firstItem = this._operation[0];
             this._operation = [firstItem, this._lastOperator, this._lastNumber];
         }
@@ -143,9 +210,9 @@ class CalcController {
                 break;
             }
         }
-        if(!lastItem) {
+        if (!lastItem) {
 
-            lastItem = (isOperator) ? this._lastOperator: this._lastNumber;
+            lastItem = (isOperator) ? this._lastOperator : this._lastNumber;
         }
 
         return lastItem;
@@ -198,13 +265,13 @@ class CalcController {
     setError() {
         this.displayCalc = "Error";
     }
-    addDot(){
+    addDot() {
 
         let lastOperation = this.getLastOperation();
         //Verifica se a ultima operação é uma String e se possui um '.'
         if (typeof lastOperation == 'string' && lastOperation.split('').indexOf('.') > -1) return;
 
-        if(this.isOperator(lastOperation) || !lastOperation) {
+        if (this.isOperator(lastOperation) || !lastOperation) {
             this.pushOperation('0.');
         } else {
             this.setLastOperation(lastOperation.toString() + '.');
